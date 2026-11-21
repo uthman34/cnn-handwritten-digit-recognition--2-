@@ -1,0 +1,57 @@
+{
+  "trainedAt": "2026-11-19T06:30:49.967Z",
+  "trainSamples": 55000,
+  "testSamples": 10000,
+  "epochs": 6,
+  "batchSize": 128,
+  "optimizer": "Adam (lr=0.001)",
+  "lossFunction": "categoricalCrossentropy",
+  "trainDurationSec": 260.41,
+  "testLoss": 0.0252,
+  "testAccuracy": 99.19,
+  "totalParams": 421642,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.2123,
+      "accuracy": 93.33,
+      "valLoss": 0.0616,
+      "valAccuracy": 98.31
+    },
+    {
+      "epoch": 2,
+      "loss": 0.0647,
+      "accuracy": 97.99,
+      "valLoss": 0.0415,
+      "valAccuracy": 98.91
+    },
+    {
+      "epoch": 3,
+      "loss": 0.0444,
+      "accuracy": 98.59,
+      "valLoss": 0.0391,
+      "valAccuracy": 98.89
+    },
+    {
+      "epoch": 4,
+      "loss": 0.0342,
+      "accuracy": 98.94,
+      "valLoss": 0.0387,
+      "valAccuracy": 98.82
+    },
+    {
+      "epoch": 5,
+      "loss": 0.0273,
+      "accuracy": 99.1,
+      "valLoss": 0.0352,
+      "valAccuracy": 99.13
+    },
+    {
+      "epoch": 6,
+      "loss": 0.0225,
+      "accuracy": 99.25,
+      "valLoss": 0.0335,
+      "valAccuracy": 99.11
+    }
+  ]
+}

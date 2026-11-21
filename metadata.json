@@ -1,0 +1,6 @@
+{
+  "name": "CNN Handwritten Digit Recognition",
+  "description": "Zero-backend Convolutional Neural Network (CNN) trained on EMNIST Balanced (47 classes: digits 0-9 and letters A-Z, a-t) running directly in the browser with TensorFlow.js.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
