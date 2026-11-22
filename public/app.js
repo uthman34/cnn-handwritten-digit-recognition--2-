@@ -458,52 +458,28 @@ async function loadStaticEvaluationMetrics() {
 }
 
 function ensureTensorFlowReady() {
-  if (window.tf) {
-    return Promise.resolve(window.tf);
-  }
+  if (window.tf) return Promise.resolve(window.tf);
 
-  return new Promise((resolve, reject) => {
-    const existingScript = document.querySelector('script[src*="tf.min.js"]');
-    if (existingScript) {
-      const onLoad = () => {
-        if (window.tf) {
-          resolve(window.tf);
-        } else {
-          reject(new Error('TensorFlow.js script loaded but window.tf is undefined.'));
-        }
-      };
-      const onError = () => reject(new Error('Failed to load ./vendor/tf.min.js script.'));
-      existingScript.addEventListener('load', onLoad, { once: true });
-      existingScript.addEventListener('error', onError, { once: true });
+  const sources = [
+    './vendor/tf.min.js',
+    'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',
+  ];
 
-      // Poll briefly in case the script finished just before attaching listeners
-      const intervalId = window.setInterval(() => {
-        if (window.tf) {
-          window.clearInterval(intervalId);
-          resolve(window.tf);
-        }
-      }, 25);
-      window.setTimeout(() => {
-        window.clearInterval(intervalId);
-        if (!window.tf) {
-          reject(new Error('Timed out waiting for TensorFlow.js vendor bundle.'));
-        }
-      }, 15000);
-      return;
-    }
-
+  const loadScript = (src) => new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = './vendor/tf.min.js';
-    script.onload = () => {
-      if (window.tf) {
-        resolve(window.tf);
-      } else {
-        reject(new Error('TensorFlow.js loaded dynamically but window.tf is undefined.'));
-      }
-    };
-    script.onerror = () => reject(new Error('Failed to load ./vendor/tf.min.js.'));
-    document.body.appendChild(script);
+    script.src = src;
+    script.async = true;
+    script.onload = () => window.tf
+      ? resolve(window.tf)
+      : reject(new Error(`TensorFlow.js loaded without window.tf: ${src}`));
+    script.onerror = () => reject(new Error(`Failed to load TensorFlow.js: ${src}`));
+    document.head.appendChild(script);
   });
+
+  return sources.reduce(
+    (promise, src) => promise.catch(() => loadScript(src)),
+    Promise.reject(new Error('Start TensorFlow.js loading'))
+  ).then((tf) => tf.ready()).then(() => window.tf);
 }
 
 async function initBrowserModel() {

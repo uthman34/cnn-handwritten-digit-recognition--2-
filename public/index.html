@@ -1,275 +1,233 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CNN Handwritten Character &amp; Digit Recognition</title>
-    <meta
-      name="description"
-      content="Zero-backend Convolutional Neural Network (CNN) trained on EMNIST Balanced (47 classes: digits 0-9 and letters A-Z, a-t) running directly in the browser with TensorFlow.js."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <header class="top-bar">
-      <div class="container top-bar-inner">
-        <a href="#recognizer" class="brand-wordmark">CNN Character Lab</a>
 
-        <nav class="top-nav" aria-label="Primary navigation">
-          <a href="#recognizer" class="nav-link">Recognizer</a>
-          <a href="#architecture" class="nav-link">Architecture</a>
-          <a href="#evaluation" class="nav-link">Evaluation</a>
-        </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CNN Handwritten Character &amp; Digit Recognition</title>
+  <meta name="description"
+    content="Zero-backend Convolutional Neural Network (CNN) trained on EMNIST Balanced (47 classes: digits 0-9 and letters A-Z, a-t) running directly in the browser with TensorFlow.js." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+</head>
 
-        <div class="top-actions">
-          <button
-            type="button"
-            id="sample-btn"
-            class="btn btn-secondary btn-sm"
-            aria-label="Load sample handwritten letter or digit onto canvas"
-          >
-            Load Sample
+<body>
+  <header class="top-bar">
+    <div class="container top-bar-inner">
+      <a href="#recognizer" class="brand-wordmark">CNN Character Lab</a>
+
+      <nav class="top-nav" aria-label="Primary navigation">
+        <a href="#recognizer" class="nav-link">Recognizer</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+        <a href="#evaluation" class="nav-link">Evaluation</a>
+      </nav>
+
+      <div class="top-actions">
+        <button type="button" id="sample-btn" class="btn btn-secondary btn-sm"
+          aria-label="Load sample handwritten letter or digit onto canvas">
+          Load Sample
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <section class="intro-section" aria-labelledby="page-title">
+      <h1 id="page-title" class="page-title">Handwritten Character &amp; Digit Recognition</h1>
+      <p class="page-subtitle">
+        Sequential CNN trained on EMNIST Balanced (47 classes: 0–9, A–Z, a–t) running 28×28 inference in the browser.
+      </p>
+      <p class="meta-line">
+        <span>Python Keras Trained</span>
+        <span aria-hidden="true">·</span>
+        <span>EMNIST Balanced (47 Classes)</span>
+        <span aria-hidden="true">·</span>
+        <span>Browser TensorFlow.js</span>
+      </p>
+    </section>
+
+    <section id="recognizer" class="workspace-grid" aria-label="Interactive Character Inference Console">
+      <!-- Left Zone: HTML5 Drawing Canvas -->
+      <article class="panel canvas-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Input Canvas</h2>
+          <span class="mono-meta">280 × 280 px</span>
+        </div>
+
+        <div class="canvas-stage">
+          <canvas id="digit-canvas" width="280" height="280" data-testid="digit-canvas"
+            aria-label="Draw a handwritten digit or letter"></canvas>
+        </div>
+
+        <div class="canvas-controls">
+          <button type="button" id="predict-btn" class="btn btn-primary" disabled>
+            Predict
+          </button>
+          <button type="button" id="clear-btn" class="btn btn-secondary">
+            Clear
           </button>
         </div>
-      </div>
-    </header>
 
-    <main class="container main-content">
-      <section class="intro-section" aria-labelledby="page-title">
-        <h1 id="page-title" class="page-title">Handwritten Character &amp; Digit Recognition</h1>
-        <p class="page-subtitle">
-          Sequential CNN trained on EMNIST Balanced (47 classes: 0–9, A–Z, a–t) running 28×28 inference in the browser.
+        <p id="canvas-feedback" class="feedback-text" role="status" aria-live="polite">
+          Loading EMNIST Balanced CNN model in browser…
         </p>
-        <p class="meta-line">
-          <span>Python Keras Trained</span>
-          <span aria-hidden="true">·</span>
-          <span>EMNIST Balanced (47 Classes)</span>
-          <span aria-hidden="true">·</span>
-          <span>Browser TensorFlow.js</span>
-        </p>
-      </section>
+      </article>
 
-      <section id="recognizer" class="workspace-grid" aria-label="Interactive Character Inference Console">
-        <!-- Left Zone: HTML5 Drawing Canvas -->
-        <article class="panel canvas-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Input Canvas</h2>
-            <span class="mono-meta">280 × 280 px</span>
+      <!-- Right Zone: Prediction Results & Softmax Distribution -->
+      <article class="panel results-panel" aria-label="Prediction Results">
+        <div class="panel-header">
+          <h2 class="panel-title">Inference Output</h2>
+          <span id="inference-meta" class="mono-meta">Shape: [1, 28, 28, 1] · 47 Classes</span>
+        </div>
+
+        <div class="prediction-summary">
+          <div class="digit-readout-block">
+            <span class="field-label">Predicted Class</span>
+            <div id="predicted-digit" class="predicted-digit-value" data-testid="predicted-digit">
+              —
+            </div>
+            <span id="predicted-category" class="category-caption">Awaiting input</span>
           </div>
 
-          <div class="canvas-stage">
-            <canvas
-              id="digit-canvas"
-              width="280"
-              height="280"
-              data-testid="digit-canvas"
-              aria-label="Draw a handwritten digit or letter"
-            ></canvas>
+          <div class="confidence-block">
+            <div class="confidence-header">
+              <span class="field-label">Confidence</span>
+              <span id="confidence-value" class="confidence-percent" data-testid="confidence-value">
+                0.00%
+              </span>
+            </div>
+            <div class="confidence-track" role="progressbar" aria-label="Prediction confidence" aria-valuemin="0"
+              aria-valuemax="100" aria-valuenow="0" id="confidence-track">
+              <div id="confidence-bar" class="confidence-fill"></div>
+            </div>
+            <p id="latency-readout" class="mono-subtext">Initializing browser runtime</p>
           </div>
 
-          <div class="canvas-controls">
-            <button type="button" id="predict-btn" class="btn btn-primary" disabled>
-              Predict
-            </button>
-            <button type="button" id="clear-btn" class="btn btn-secondary">
-              Clear
-            </button>
+          <div class="tensor-preview-block">
+            <span class="field-label">28×28 Tensor</span>
+            <canvas id="preview-canvas" width="28" height="28"
+              aria-label="Normalized 28 by 28 grayscale tensor preview"></canvas>
           </div>
+        </div>
 
-          <p
-            id="canvas-feedback"
-            class="feedback-text"
-            role="status"
-            aria-live="polite"
-          >
-            Loading EMNIST Balanced CNN model in browser…
+        <div class="distribution-section">
+          <div class="distribution-header">
+            <h3 class="subsection-title" id="dist-heading">Top Predicted Candidates</h3>
+            <div class="segmented-control" role="group" aria-label="Probability view mode">
+              <button type="button" id="view-top10-btn" class="seg-btn is-active" aria-pressed="true">
+                Top 10
+              </button>
+              <button type="button" id="view-all47-btn" class="seg-btn" aria-pressed="false">
+                All 47
+              </button>
+            </div>
+          </div>
+          <div id="prob-list" class="prob-list" data-testid="prob-list"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="architecture" class="section-block" aria-labelledby="arch-heading">
+      <div class="section-header">
+        <div>
+          <h2 id="arch-heading" class="section-title">Sequential CNN Architecture</h2>
+          <p class="section-desc">
+            Two spatial feature extraction blocks followed by dense classification across 47 EMNIST Balanced classes.
           </p>
-        </article>
-
-        <!-- Right Zone: Prediction Results & Softmax Distribution -->
-        <article class="panel results-panel" aria-label="Prediction Results">
-          <div class="panel-header">
-            <h2 class="panel-title">Inference Output</h2>
-            <span id="inference-meta" class="mono-meta">Shape: [1, 28, 28, 1] · 47 Classes</span>
-          </div>
-
-          <div class="prediction-summary">
-            <div class="digit-readout-block">
-              <span class="field-label">Predicted Class</span>
-              <div
-                id="predicted-digit"
-                class="predicted-digit-value"
-                data-testid="predicted-digit"
-              >
-                —
-              </div>
-              <span id="predicted-category" class="category-caption">Awaiting input</span>
-            </div>
-
-            <div class="confidence-block">
-              <div class="confidence-header">
-                <span class="field-label">Confidence</span>
-                <span
-                  id="confidence-value"
-                  class="confidence-percent"
-                  data-testid="confidence-value"
-                >
-                  0.00%
-                </span>
-              </div>
-              <div
-                class="confidence-track"
-                role="progressbar"
-                aria-label="Prediction confidence"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
-                id="confidence-track"
-              >
-                <div id="confidence-bar" class="confidence-fill"></div>
-              </div>
-              <p id="latency-readout" class="mono-subtext">Initializing browser runtime</p>
-            </div>
-
-            <div class="tensor-preview-block">
-              <span class="field-label">28×28 Tensor</span>
-              <canvas
-                id="preview-canvas"
-                width="28"
-                height="28"
-                aria-label="Normalized 28 by 28 grayscale tensor preview"
-              ></canvas>
-            </div>
-          </div>
-
-          <div class="distribution-section">
-            <div class="distribution-header">
-              <h3 class="subsection-title" id="dist-heading">Top Predicted Candidates</h3>
-              <div class="segmented-control" role="group" aria-label="Probability view mode">
-                <button
-                  type="button"
-                  id="view-top10-btn"
-                  class="seg-btn is-active"
-                  aria-pressed="true"
-                >
-                  Top 10
-                </button>
-                <button
-                  type="button"
-                  id="view-all47-btn"
-                  class="seg-btn"
-                  aria-pressed="false"
-                >
-                  All 47
-                </button>
-              </div>
-            </div>
-            <div id="prob-list" class="prob-list" data-testid="prob-list"></div>
-          </div>
-        </article>
-      </section>
-
-      <section id="architecture" class="section-block" aria-labelledby="arch-heading">
-        <div class="section-header">
-          <div>
-            <h2 id="arch-heading" class="section-title">Sequential CNN Architecture</h2>
-            <p class="section-desc">
-              Two spatial feature extraction blocks followed by dense classification across 47 EMNIST Balanced classes.
-            </p>
-          </div>
-          <span id="param-count-meta" class="mono-meta">Loading layers…</span>
         </div>
-
-        <div class="table-panel">
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Layer</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">Configuration</th>
-                  <th scope="col">Output Shape</th>
-                  <th scope="col" class="num-col">Parameters</th>
-                </tr>
-              </thead>
-              <tbody id="architecture-body">
-                <tr>
-                  <td colspan="6" class="empty-cell">Loading model architecture…</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section id="evaluation" class="section-block" aria-labelledby="eval-heading">
-        <div class="section-header">
-          <div>
-            <h2 id="eval-heading" class="section-title">Training &amp; Test Evaluation</h2>
-            <p class="section-desc">
-              Trained on 112,800 EMNIST Balanced images and evaluated on 18,800 held-out test characters (0–9, A–Z, a–t).
-            </p>
-          </div>
-          <span id="eval-summary-meta" class="mono-meta">Loading metrics…</span>
-        </div>
-
-        <div class="kpi-strip" id="kpi-strip">
-          <div class="kpi-cell">
-            <span class="field-label">Test Accuracy</span>
-            <span class="kpi-value" id="kpi-test-acc">—</span>
-          </div>
-          <div class="kpi-cell">
-            <span class="field-label">Test Loss</span>
-            <span class="kpi-value" id="kpi-test-loss">—</span>
-          </div>
-          <div class="kpi-cell">
-            <span class="field-label">Output Classes</span>
-            <span class="kpi-value" id="kpi-classes">47</span>
-          </div>
-          <div class="kpi-cell">
-            <span class="field-label">Total Parameters</span>
-            <span class="kpi-value" id="kpi-params">—</span>
-          </div>
-        </div>
-
-        <div class="table-panel">
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th scope="col">Epoch</th>
-                  <th scope="col" class="num-col">Train Loss</th>
-                  <th scope="col" class="num-col">Train Accuracy</th>
-                  <th scope="col" class="num-col">Val Loss</th>
-                  <th scope="col" class="num-col">Val Accuracy</th>
-                </tr>
-              </thead>
-              <tbody id="history-body">
-                <tr>
-                  <td colspan="5" class="empty-cell">Loading training history…</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <span>Final Year Computer Science Project · Zero-Backend EMNIST Balanced CNN</span>
-        <span class="mono-meta">Python Keras · TensorFlow.js · 47 Classes</span>
+        <span id="param-count-meta" class="mono-meta">Loading layers…</span>
       </div>
-    </footer>
 
-    <script src="./vendor/tf.min.js" defer></script>
-    <script type="module" src="./app.js"></script>
-  </body>
+      <div class="table-panel">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Layer</th>
+                <th scope="col">Type</th>
+                <th scope="col">Configuration</th>
+                <th scope="col">Output Shape</th>
+                <th scope="col" class="num-col">Parameters</th>
+              </tr>
+            </thead>
+            <tbody id="architecture-body">
+              <tr>
+                <td colspan="6" class="empty-cell">Loading model architecture…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="evaluation" class="section-block" aria-labelledby="eval-heading">
+      <div class="section-header">
+        <div>
+          <h2 id="eval-heading" class="section-title">Training &amp; Test Evaluation</h2>
+          <p class="section-desc">
+            Trained on 112,800 EMNIST Balanced images and evaluated on 18,800 held-out test characters (0–9, A–Z, a–t).
+          </p>
+        </div>
+        <span id="eval-summary-meta" class="mono-meta">Loading metrics…</span>
+      </div>
+
+      <div class="kpi-strip" id="kpi-strip">
+        <div class="kpi-cell">
+          <span class="field-label">Test Accuracy</span>
+          <span class="kpi-value" id="kpi-test-acc">—</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="field-label">Test Loss</span>
+          <span class="kpi-value" id="kpi-test-loss">—</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="field-label">Output Classes</span>
+          <span class="kpi-value" id="kpi-classes">47</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="field-label">Total Parameters</span>
+          <span class="kpi-value" id="kpi-params">—</span>
+        </div>
+      </div>
+
+      <div class="table-panel">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Epoch</th>
+                <th scope="col" class="num-col">Train Loss</th>
+                <th scope="col" class="num-col">Train Accuracy</th>
+                <th scope="col" class="num-col">Val Loss</th>
+                <th scope="col" class="num-col">Val Accuracy</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <tr>
+                <td colspan="5" class="empty-cell">Loading training history…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>Final Year Computer Science Project · Zero-Backend EMNIST Balanced CNN</span>
+      <span class="mono-meta">Python Keras · TensorFlow.js · 47 Classes</span>
+    </div>
+  </footer>
+
+  <script src="./vendor/tf.min.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</body>
+
 </html>
