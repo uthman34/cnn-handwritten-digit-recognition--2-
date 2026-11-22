@@ -1,0 +1,150 @@
+{
+  "dataset": "EMNIST Balanced",
+  "trainedAt": "2026-11-22T14:55:20.408566+00:00",
+  "trainSamples": 112800,
+  "testSamples": 18800,
+  "numClasses": 47,
+  "classLabels": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "a",
+    "b",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "n",
+    "q",
+    "r",
+    "t"
+  ],
+  "epochs": 12,
+  "batchSize": 256,
+  "optimizer": "Adam (lr=0.001)",
+  "lossFunction": "categorical_crossentropy",
+  "trainDurationSec": 1101.22,
+  "testLoss": 0.3592,
+  "testAccuracy": 88.09,
+  "totalParams": 426415,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 1.1239,
+      "accuracy": 66.89,
+      "valLoss": 0.5111,
+      "valAccuracy": 82.68
+    },
+    {
+      "epoch": 2,
+      "loss": 0.5736,
+      "accuracy": 81.19,
+      "valLoss": 0.4235,
+      "valAccuracy": 84.83
+    },
+    {
+      "epoch": 3,
+      "loss": 0.4836,
+      "accuracy": 83.76,
+      "valLoss": 0.4012,
+      "valAccuracy": 85.68
+    },
+    {
+      "epoch": 4,
+      "loss": 0.4346,
+      "accuracy": 85.19,
+      "valLoss": 0.3748,
+      "valAccuracy": 86.61
+    },
+    {
+      "epoch": 5,
+      "loss": 0.404,
+      "accuracy": 86.1,
+      "valLoss": 0.3718,
+      "valAccuracy": 86.82
+    },
+    {
+      "epoch": 6,
+      "loss": 0.3807,
+      "accuracy": 86.64,
+      "valLoss": 0.3604,
+      "valAccuracy": 86.91
+    },
+    {
+      "epoch": 7,
+      "loss": 0.3595,
+      "accuracy": 87.22,
+      "valLoss": 0.351,
+      "valAccuracy": 87.23
+    },
+    {
+      "epoch": 8,
+      "loss": 0.34,
+      "accuracy": 87.8,
+      "valLoss": 0.3508,
+      "valAccuracy": 87.35
+    },
+    {
+      "epoch": 9,
+      "loss": 0.3254,
+      "accuracy": 88.16,
+      "valLoss": 0.3454,
+      "valAccuracy": 87.34
+    },
+    {
+      "epoch": 10,
+      "loss": 0.311,
+      "accuracy": 88.66,
+      "valLoss": 0.3403,
+      "valAccuracy": 87.62
+    },
+    {
+      "epoch": 11,
+      "loss": 0.2977,
+      "accuracy": 88.96,
+      "valLoss": 0.342,
+      "valAccuracy": 87.66
+    },
+    {
+      "epoch": 12,
+      "loss": 0.2854,
+      "accuracy": 89.3,
+      "valLoss": 0.3466,
+      "valAccuracy": 87.89
+    }
+  ]
+}

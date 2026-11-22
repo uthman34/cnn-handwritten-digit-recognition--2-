@@ -422,15 +422,16 @@ function renderArchitectureFromModel(model) {
 async function loadStaticEvaluationMetrics() {
   try {
     let response = await fetch('./emnist_model/training_metrics.json');
+    let loadedEmnistMetrics = response.ok;
     if (!response.ok) {
       response = await fetch('./tfjs_model/training_metrics.json');
     }
     if (!response.ok) return;
     const m = await response.json();
 
-    if (Array.isArray(m.classLabels) && m.classLabels.length === 47) {
+    if (loadedEmnistMetrics && Array.isArray(m.classLabels) && m.classLabels.length === 47) {
       classLabels = m.classLabels;
-    } else if (m.numClasses === 10) {
+    } else {
       classLabels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     }
 

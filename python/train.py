@@ -22,13 +22,17 @@ from pathlib import Path
 import numpy as np
 import tensorflow as tf
 
-# TensorFlow.js imports this package while loading converter modules, but this
-# project exports a regular Keras Sequential model and never uses TF Decision Forests.
-if "tensorflow_decision_forests" not in sys.modules:
-    sys.modules.setdefault(
-        "tensorflow_decision_forests",
-        types.ModuleType("tensorflow_decision_forests"),
-    )
+# TensorFlow.js imports optional converter packages; this project only exports a regular Keras Sequential model.
+for module_name in (
+    "tensorflow_decision_forests",
+    "jax",
+    "jax.experimental",
+    "jax.experimental.jax2tf",
+):
+    if module_name not in sys.modules:
+        sys.modules[module_name] = types.ModuleType(module_name)
+
+sys.modules["jax.experimental"].jax2tf = sys.modules["jax.experimental.jax2tf"]
 
 import tensorflowjs as tfjs
 
@@ -171,13 +175,15 @@ def build_cnn_model(num_classes: int = NUM_CLASSES):
 def train_and_export():
     print("=== Python Keras EMNIST Balanced CNN Training & Browser Export ===")
     (x_train, y_train), (x_test, y_test), class_labels = load_emnist_balanced()
+    if len(class_labels) != NUM_CLASSES:
+        raise RuntimeError(f"Expected {NUM_CLASSES} EMNIST classes, found {len(class_labels)}")
     print(f"Classes ({len(class_labels)}): {' '.join(class_labels)}")
-    print(f"Training samples: {x_train.shape[0]} | Test samples: {x_test.shape[0]}")
+    print(f"Training samples: {x_train.shape[0]} | Test samples: {x_test.shape[0]}\n")
 
     model = build_cnn_model(len(class_labels))
     model.summary()
 
-    epochs = 6
+    epochs = 12
     batch_size = 256
 
     start_time = time.perf_counter()

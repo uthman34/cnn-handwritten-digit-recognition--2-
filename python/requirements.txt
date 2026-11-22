@@ -1,3 +1,9 @@
-tensorflow==2.15.1
+tensorflow==2.15.0
 tensorflowjs==4.22.0
+tf-keras==2.15.0
+tensorflow-hub==0.16.1
 numpy==1.26.4
+jax==0.4.23
+jaxlib==0.4.23
+flax==0.7.2
+importlib-resources==6.5.2
