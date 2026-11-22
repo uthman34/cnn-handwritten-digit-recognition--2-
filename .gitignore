@@ -7,3 +7,6 @@ coverage/
 .env*
 !.env.example
 python/.cache/
+
+.vercel
+.env*
